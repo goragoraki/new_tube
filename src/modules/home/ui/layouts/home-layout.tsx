@@ -7,7 +7,7 @@ interface LayoutProps {
 export function HomeLayout({ children }: LayoutProps) {
     return (
         <SidebarProvider>
-            <div className="w-full">
+            <div>
                 <HomeNavbar />
             </div>
             <div>
