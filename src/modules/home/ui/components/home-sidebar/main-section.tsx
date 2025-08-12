@@ -1,6 +1,7 @@
 "use client"
 
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { useAuth, useClerk } from "@clerk/nextjs";
 import { FlameIcon, HomeIcon, PlaySquareIcon } from "lucide-react"
 import Link from "next/link";
 
@@ -24,6 +25,9 @@ const items = [
 ]
 
 export function MainSection() {
+    const { isSignedIn, userId } = useAuth();
+    const clerk = useClerk();
+
     return (
         <SidebarGroup>
             <SidebarGroupContent>
@@ -33,7 +37,12 @@ export function MainSection() {
                             <SidebarMenuButton
                                 asChild // 이걸써서 밑에 링크가 렌더될수있도록함
                                 isActive={false} // todo : chanage to look at current pathname
-                                onClick={() => { }} // todo: do something to click
+                                onClick={(e) => {
+                                    if (!isSignedIn && item.auth) {
+                                        e.preventDefault();
+                                        clerk.openSignIn();
+                                    }
+                                }} // todo: do something to click
                             >
                                 <Link href={item.url} className="flex items-center gap-4">
                                     <item.icon />
