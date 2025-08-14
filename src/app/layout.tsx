@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs"
 import "./globals.css";
+import { TRPCReactProvider } from "@/trpc/client";
 
 const inter = Inter({ subsets: ["latin"] })
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -32,9 +22,11 @@ export default function RootLayout({
         <body
           className={inter.className}
         >
-          <main>
-            {children}
-          </main>
+          <TRPCReactProvider>
+            <main>
+              {children}
+            </main>
+          </TRPCReactProvider>
         </body>
       </html>
     </ClerkProvider>
