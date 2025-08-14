@@ -5,10 +5,10 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 export default function Client() {
     const trpc = useTRPC();
-    const { data } = useSuspenseQuery(trpc.hello.queryOptions({ text: 'an1' }));
+    const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
     return (
         <div>
-            {data.greeting}
+            {JSON.stringify(data)}
         </div>
     );
 }
