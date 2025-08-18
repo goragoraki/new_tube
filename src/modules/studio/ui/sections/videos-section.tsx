@@ -21,15 +21,85 @@ import { VideoTumbnail } from "@/modules/videos/ui/components/video-thumbnail";
 import { snakeCaseToTitle } from "@/lib/utils";
 import { format } from "date-fns";
 import { Globe2Icon, LockIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 export const VideosSection = () => {
     return (
-        <Suspense fallback={<p>Loading...</p>}>
+        <Suspense fallback={<VideoSectionSkeleton />}>
             <ErrorBoundary fallback={<p>Error...</p>}>
                 <VideosSectionSuspense />
             </ErrorBoundary>
         </Suspense>
+    )
+}
+
+export function VideoSectionSkeleton() {
+    return (
+        <div>
+            <div className="border-y">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="pl-6 w-[510px]">동영상</TableHead>
+                            <TableHead>공개상태</TableHead>
+                            <TableHead>제한사항</TableHead>
+                            <TableHead>날짜</TableHead>
+                            <TableHead>조회수</TableHead>
+                            <TableHead>댓글</TableHead>
+                            <TableHead>좋아요</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {Array.from({ length: 5 }).map((_, idx) => (
+                            <TableRow key={idx}>
+                                <TableCell className="pl-6">
+                                    <div className="flex items-center gap-4">
+                                        <Skeleton className="h-20 w-36" />
+                                        <div className="flex flex-col gap-y-2">
+                                            <Skeleton className="h-4 w-[100px]" />
+                                            <Skeleton className="h-3 w-[150px]" />
+                                        </div>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                        <Skeleton className="w-[1rem] h-4 rounded-full" />
+                                        <Skeleton className="w-[45px] h-3" />
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center">
+                                        <Skeleton className="w-[50px] h-3" />
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center">
+                                        <Skeleton className="w-[50px] h-3" />
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center">
+                                        <Skeleton className="w-[1.5rem] h-3" />
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center">
+                                        <Skeleton className="w-[1.5rem] h-3" />
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center">
+                                        <Skeleton className="w-[1.5rem] h-3" />
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
     )
 }
 
@@ -42,7 +112,7 @@ export function VideosSectionSuspense() {
 
     return (
         <div>
-            <div className="boder-y">
+            <div className="border-y">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -59,7 +129,7 @@ export function VideosSectionSuspense() {
                         {data.pages.flatMap((page) => page.items).map((video) => (
                             <Link href={`/studio/videos/${video.id}`} key={video.id} legacyBehavior>
                                 <TableRow className=" cursor-pointer">
-                                    <TableCell>
+                                    <TableCell className="pl-6">
                                         <div className="flex items-center gap-4">
                                             <div className="flex flex-shrink-0 aspect-video w-36">
                                                 <VideoTumbnail
