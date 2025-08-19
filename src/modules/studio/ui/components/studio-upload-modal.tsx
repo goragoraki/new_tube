@@ -4,11 +4,13 @@ import { ResponsiveModal } from "@/components/reponsive-dialog";
 import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { BatteryPlusIcon, Loader2Icon, PlusIcon } from "lucide-react";
+import { BatteryPlusIcon, Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { StudioUploader } from "./studio-uploader";
+import { useRouter } from "next/navigation";
 
 export default function StudioUploadModal() {
+    const router = useRouter();
     const trpc = useTRPC();
     const queryClient = useQueryClient();
 
@@ -18,13 +20,23 @@ export default function StudioUploadModal() {
                 await queryClient.invalidateQueries(
                     trpc.studio.getMany.infiniteQueryFilter()
                 )
-                toast.success("비디오 업로드 완료")
+                toast.success("비디오 생성")
             },
             onError: (error) => {
                 toast.error(error.message);
             }
         }
     ))
+
+    const onSuccess = () => {
+        if (!create.data?.video.id) {
+            return
+        }
+
+        create.reset();
+        router.push(`/studio/videos/${create.data.video.id}`);
+    }
+
     return (
         <>
             <ResponsiveModal
@@ -33,7 +45,7 @@ export default function StudioUploadModal() {
                 onOpenChange={() => { create.reset() }}
             >
                 {create.data?.url
-                    ? <StudioUploader endPoint={create.data.url} onSuccess={() => { }} />
+                    ? <StudioUploader endPoint={create.data.url} onSuccess={onSuccess} />
                     : <Loader2Icon className="animate-spin" />
                 }
             </ResponsiveModal>

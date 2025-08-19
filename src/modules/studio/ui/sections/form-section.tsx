@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { z } from "zod"
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import {
     DropdownMenu,
@@ -12,7 +12,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVerticalIcon, TrashIcon } from "lucide-react";
+import { CopyCheckIcon, CopyIcon, Globe2Icon, LockIcon, MoreVerticalIcon, TrashIcon } from "lucide-react";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -37,6 +37,9 @@ import {
 import { videoUpdateSchema } from "@/db/schema";
 import { toast } from "sonner";
 import VideoPlayer from "@/modules/videos/ui/components/video-player";
+import Link from "next/link";
+import { snakeCaseToTitle } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface FormSectionProps {
     videoId: string
@@ -62,6 +65,7 @@ function FormSectionSkeleton() {
 }
 
 function FormSectionSuspense({ videoId }: FormSectionProps) {
+    const router = useRouter();
     const trpc = useTRPC();
     const { data: video } = useSuspenseQuery(trpc.studio.getOne.queryOptions({
         id: videoId
@@ -84,6 +88,16 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
         }
     }))
 
+    const remove = useMutation(trpc.videos.remove.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries(
+                trpc.studio.getMany.queryFilter()
+            )
+            toast.success("비디오 삭제 완료");
+            router.push(`/studio`)
+        }
+    }))
+
     const form = useForm<z.infer<typeof videoUpdateSchema>>({
         resolver: zodResolver(videoUpdateSchema),
         defaultValues: video,
@@ -92,6 +106,19 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
     const onSubmit = (data: z.infer<typeof videoUpdateSchema>) => {
         update.mutate(data) // isPending으로 대체 가능 
         //await update.mutateAsync(data) // mutateAsync를 하면 isSubmitting 사용가능 
+    }
+
+    // Todo: vercel로 배포시 바꿔줘야함 
+    const fullUrl = `${process.env.VERCEL_URL || "http://localhosts:3000"}/videos/${videoId}`
+    const [isCopied, setIsCopied] = useState(false);
+
+    const onCopy = async () => {
+        await navigator.clipboard.writeText(fullUrl);
+        setIsCopied(true);
+
+        setTimeout(() => {
+            setIsCopied(false);
+        }, 2000)
     }
 
     return (
@@ -113,7 +140,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => remove.mutate({ id: videoId })} className=" cursor-pointer">
                                     <TrashIcon className="size-4 mr-2" />
                                     <p>삭제</p>
                                 </DropdownMenuItem>
@@ -199,13 +226,99 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                     </div>
                     <div className="flex flex-col gap-y-8 lg:col-span-2">
                         <div className="flex flex-col gap-4 bg-[#F9F9F9] rounded-xl overflow-hidden h-fit">
+
                             <div className="aspect-video overflow-hidden relative">
                                 <VideoPlayer
                                     playbackId={video.muxPlayBackId}
                                     thumbnailUrl={video.thumbnailUrl}
                                 />
                             </div>
+
+                            <div className="p-4 flex flex-col gap-y-6">
+                                <div className="flex justify-between items-center gap-x-2">
+                                    <div className="flex flex-col gap-y-1">
+                                        <p className="text-xs text-muted-foreground">
+                                            비디오 링크
+                                        </p>
+                                        <div className="flex items-center gap-x-2">
+                                            <Link href={`/videos/${video.id}`}>
+                                                <p className="line-clamp-1 text-sm text-blue-500">
+                                                    {fullUrl}
+                                                </p>
+                                            </Link>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="shrink-0"
+                                                onClick={onCopy}
+                                                disabled={isCopied}
+                                            >
+                                                {isCopied ? <CopyCheckIcon /> : <CopyIcon />}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center">
+                                    <div className="flex flex-col gap-y-1">
+                                        <p className="text-muted-foreground text-xs">
+                                            비디오 상태
+                                        </p>
+                                        <p className="text-sm">
+                                            {snakeCaseToTitle(video.muxStatus || "Preparing")}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center">
+                                    <div className="flex flex-col gap-y-1">
+                                        <p className="text-muted-foreground text-xs">
+                                            자막 상태
+                                        </p>
+                                        <p className="text-sm">
+                                            {snakeCaseToTitle(video.muxTrackStatus || "None")}
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
+
+                        <FormField
+                            control={form.control}
+                            name="visibility"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>공개범위</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={video.visibility} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="public">
+                                                <div className="flex items-center">
+                                                    <Globe2Icon className="size-4 mr-1" />
+                                                    Public
+                                                </div>
+                                            </SelectItem>
+                                            <SelectItem value="private">
+                                                <div className="flex items-center">
+                                                    <LockIcon className="size-4 mr-1" />
+                                                    Private
+                                                </div>
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}
+
+                        />
                     </div>
                 </div>
             </form>

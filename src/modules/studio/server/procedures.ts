@@ -35,7 +35,7 @@ export const studioRouter = createTRPCRouter({
         .input(
             z.object({
                 cursor: z.object({
-                    id: z.string().uuid(),
+                    id: z.uuid(),
                     updatedAt: z.date(),
                 })
                     .nullish(),
