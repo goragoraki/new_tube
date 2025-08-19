@@ -15,10 +15,10 @@ export default function StudioUploadModal() {
     const create = useMutation(trpc.videos.create.mutationOptions(
         {
             onSuccess: async () => {
-                toast.success("비디오 업로드 완료")
                 await queryClient.invalidateQueries(
                     trpc.studio.getMany.infiniteQueryFilter()
                 )
+                toast.success("비디오 업로드 완료")
             },
             onError: (error) => {
                 toast.error(error.message);
