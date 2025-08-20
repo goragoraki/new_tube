@@ -12,7 +12,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CopyCheckIcon, CopyIcon, Globe2Icon, ImagePlusIcon, LockIcon, MoreVerticalIcon, RotateCcwIcon, SparklesIcon, TrashIcon } from "lucide-react";
+import { CopyCheckIcon, CopyIcon, Globe2Icon, ImagePlusIcon, Loader2Icon, LockIcon, MoreVerticalIcon, RotateCcwIcon, SparklesIcon, TrashIcon } from "lucide-react";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -119,6 +119,24 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
         }
     }))
 
+    const generateTitle = useMutation(trpc.videos.generateTitle.mutationOptions({
+        onSuccess: () => {
+            toast.success("백그라운드 잡이 실행되었습니다.", { description: "제목 열심히 만드는 중" })
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    }))
+
+    const generateDescription = useMutation(trpc.videos.generateDescription.mutationOptions({
+        onSuccess: () => {
+            toast.success("백그라운드 잡이 실행되었습니다.", { description: "영상 설명 열심히 만드는 중" })
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    }))
+
     const form = useForm<z.infer<typeof videoUpdateSchema>>({
         resolver: zodResolver(videoUpdateSchema),
         defaultValues: video,
@@ -183,8 +201,23 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                            제목
-                                            {/** todo add ai generate button */}
+                                            <div className="flex items-center gap-x-2">
+                                                제목
+                                                <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    variant="outline"
+                                                    className="rounded-full size-6 [&_svg]:size-3"
+                                                    onClick={() => generateTitle.mutate({ id: videoId })}
+                                                    disabled={generateTitle.isPending || !video.muxTrackId}
+                                                >
+                                                    {generateTitle.isPending
+                                                        ? <Loader2Icon className="animate-spin" />
+                                                        : <SparklesIcon />
+                                                    }
+                                                </Button>
+                                            </div>
+
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -198,7 +231,43 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                                     </FormItem>
                                 )}
                             />
-                            {/** todo: 섬네일 사진 필드 추가 */}
+
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            <div className="flex items-center gap-x-2">
+                                                영상설명
+                                                <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    variant="outline"
+                                                    className="rounded-full size-6 [&_svg]:size-3"
+                                                    onClick={() => generateDescription.mutate({ id: videoId })}
+                                                    disabled={generateDescription.isPending || !video.muxTrackId}
+                                                >
+                                                    {generateDescription.isPending
+                                                        ? <Loader2Icon className="animate-spin" />
+                                                        : <SparklesIcon />
+                                                    }
+                                                </Button>
+                                            </div>
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                {...field}
+                                                value={field.value ?? ""}
+                                                rows={10}
+                                                className="resize-none pr-10"
+                                                placeholder="영상을 설명해주세요"
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+
                             <FormField
                                 control={form.control}
                                 name="thumbnailUrl"
@@ -230,7 +299,9 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                                                             <ImagePlusIcon className="size-4 mr-1" />
                                                             수정
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            onClick={() => { }}
+                                                        >
                                                             <SparklesIcon className="size-4 mr-1" />
                                                             AI로 생성하기
                                                         </DropdownMenuItem>
@@ -241,28 +312,6 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </div>
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            영상설명
-                                            {/** todo add ai generate button */}
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                {...field}
-                                                value={field.value ?? ""}
-                                                rows={10}
-                                                className="resize-none pr-10"
-                                                placeholder="영상을 설명해주세요"
-                                            />
                                         </FormControl>
                                     </FormItem>
                                 )}
