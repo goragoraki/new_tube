@@ -43,6 +43,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import ThumbnailUploadModal from "../components/thumbnail-upload-modal";
+import ThumbnailGenerateModal from "../components/thumbnail-generate-modal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FormSectionProps {
     videoId: string
@@ -61,9 +63,61 @@ export default function FormSection({ videoId }: FormSectionProps) {
 
 function FormSectionSkeleton() {
     return (
-        <p>
-            loading....
-        </p>
+        <div>
+            <div className="flex items-center justify-between mb-6">
+                <div className="space-y-2">
+                    <Skeleton className="h-7 w-32" />
+                    <Skeleton className="h-4 w-40" />
+                </div>
+                <div className="flex items-center gap-x-2 space-x-2 mr-2">
+                    <Skeleton className="h-9 w-14" />
+                    <Skeleton className="h-5 w-2" />
+                </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                <div className="space-y-8 lg:col-span-3">
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-8" />
+                        <Skeleton className="h-8 w-full" />
+                    </div>
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-12" />
+                        <Skeleton className="h-64 w-full" />
+                    </div>
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-10" />
+                        <Skeleton className="h-40 w-80" />
+                    </div>
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-8" />
+                        <Skeleton className="h-8 w-full" />
+                    </div>
+                </div>
+                <div className="space-y-8 lg:col-span-2">
+                    <div className="flex flex-col gap-4 bg-[#F9F9F9] rounded-xl overflow-hidden">
+                        <Skeleton className=" aspect-video" />
+                        <div className="p-4 space-y-6">
+                            <div className="flex flex-col gap-y-2">
+                                <Skeleton className="h-3 w-20" />
+                                <Skeleton className="h-5 w-full" />
+                            </div>
+                            <div className="flex flex-col gap-y-2">
+                                <Skeleton className="h-3 w-16" />
+                                <Skeleton className="h-5 w-12" />
+                            </div>
+                            <div className="flex flex-col gap-y-2">
+                                <Skeleton className="h-3 w-14" />
+                                <Skeleton className="h-5 w-12" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-y-2">
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-6 w-full" />
+                    </div>
+                </div>
+            </div>
+        </div>
     )
 }
 
@@ -72,6 +126,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
     const trpc = useTRPC();
 
     const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false);
+    const [thumbnailGenerateModalOpen, setThumbnailGenerateModalOpen] = useState(false);
 
     const { data: video } = useSuspenseQuery(trpc.studio.getOne.queryOptions({
         id: videoId
@@ -162,6 +217,11 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
 
     return (
         <>
+            <ThumbnailGenerateModal
+                videoId={videoId}
+                open={thumbnailGenerateModalOpen}
+                onOpenChange={setThumbnailGenerateModalOpen}
+            />
             <ThumbnailUploadModal
                 open={thumbnailModalOpen}
                 onOpenChange={setThumbnailModalOpen}
@@ -300,7 +360,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                                                             수정
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            onClick={() => { }}
+                                                            onClick={() => setThumbnailGenerateModalOpen(true)}
                                                         >
                                                             <SparklesIcon className="size-4 mr-1" />
                                                             AI로 생성하기
