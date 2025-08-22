@@ -235,7 +235,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                             <p className="text-xs text-muted-foreground">동영상 세부사항을 수정해보세요</p>
                         </div>
                         <div className="flex items-center gap-x-2">
-                            <Button type="submit" disabled={update.isPending}>
+                            <Button type="submit" disabled={update.isPending || !form.formState.isDirty}>
                                 저장
                             </Button>
                             <DropdownMenu>
