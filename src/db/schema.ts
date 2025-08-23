@@ -19,6 +19,7 @@ export const users = pgTable("users", {
 export const userRelations = relations(users, ({ many }) => ({
     videos: many(videos),
     videoViews: many(videoViews),
+    videoReactons: many(videoReactions),
 }))
 
 export const categories = pgTable('categories', {
@@ -81,6 +82,7 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
         references: [categories.id],
     }),
     views: many(videoViews),
+    reactions: many(videoReactions),
 }))
 
 export const videoViews = pgTable("video_views", {
@@ -111,3 +113,33 @@ export const videoViewInsertSchema = createInsertSchema(videoViews); // insert �
 export const videoViewUpdateSchema = createUpdateSchema(videoViews); // update 시변경 가능한 필드검증
 // => db 스키마와 zod 스키마를 중복 정의할 필요없이 자동 동기화
 // 여기서 사용하지 않지만 relational query api 를 사용할때 필요한 코드들 relations 등등
+
+export const reactionType = pgEnum("reaction_type", ["like", "dislike"])
+
+export const videoReactions = pgTable("video_reactions", {
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    videoId: uuid("video_id").references(() => videos.id, { onDelete: "cascade" }).notNull(),
+    type: reactionType("type").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (t) => [
+    primaryKey({
+        name: "video_reactions_pk",
+        columns: [t.userId, t.videoId],
+    })
+])
+
+export const videoReactionRelations = relations(videoReactions, ({ one }) => ({
+    users: one(users, {
+        fields: [videoReactions.userId],
+        references: [users.id]
+    }),
+    videos: one(videos, {
+        fields: [videoReactions.videoId],
+        references: [videos.id]
+    })
+}))
+
+export const videotReactionSelectSchema = createSelectSchema(videoReactions);
+export const videoReactionsInsertSchema = createInsertSchema(videoReactions); // insert 시 필요한 필드 검증 (ex: userId, videoId 필수)
+export const videoReactionsUpdateSchema = createUpdateSchema(videoReactions); // update 시변경 가능한 필드검증
