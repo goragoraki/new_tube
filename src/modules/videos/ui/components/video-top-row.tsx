@@ -16,14 +16,14 @@ export default function VideoTopRow({ video }: VideoTopRowProps) {
     const compactViews = useMemo(() => {
         return Intl.NumberFormat("ko", {
             notation: "compact",
-        }).format(10);
-    }, [])
+        }).format(video.viewCount);
+    }, [video.viewCount])
 
     const expanededViews = useMemo(() => {
         return Intl.NumberFormat("ko", {
             notation: "standard"
-        }).format(10000);
-    }, [])
+        }).format(video.viewCount);
+    }, [video.viewCount])
 
     const compactDate = useMemo(() => {
         return formatDistanceToNow(video.createdAt, { addSuffix: true, locale: ko })

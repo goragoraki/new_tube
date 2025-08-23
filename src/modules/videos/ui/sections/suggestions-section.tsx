@@ -1,4 +1,4 @@
-export default function SuggsetionsSection() {
+export default function SuggestionsSection() {
     return (
         <div>
             suggestion

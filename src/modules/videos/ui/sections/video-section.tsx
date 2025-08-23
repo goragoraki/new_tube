@@ -2,12 +2,13 @@
 
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import VideoPlayer from "../components/video-player";
 import VideoBanner from "../components/video-banner";
 import VideoTopRow from "../components/video-top-row";
+import { useAuth } from "@clerk/nextjs";
 
 interface VideoSectionProps {
     videoId: string;
@@ -24,9 +25,25 @@ export default function VideoSection({ videoId }: VideoSectionProps) {
 }
 
 function VideoSectionSuspense({ videoId }: VideoSectionProps) {
+    const { isSignedIn } = useAuth();
+
     const trpc = useTRPC();
+    const queryClient = useQueryClient();
     const { data: video } = useSuspenseQuery(trpc.videos.getOne.queryOptions({ id: videoId }));
 
+    const createView = useMutation(trpc.videoViews.create.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries(
+                trpc.videos.getOne.queryFilter({ id: videoId })
+            )
+        }
+    }))
+
+    const handlePlay = () => {
+        if (!isSignedIn) return;
+
+        createView.mutate({ videoId });
+    }
     return (
         <>
             <div className={cn(
@@ -35,7 +52,7 @@ function VideoSectionSuspense({ videoId }: VideoSectionProps) {
             )}>
                 <VideoPlayer
                     autoPlay={false}
-                    onPlay={() => { }}
+                    onPlay={handlePlay}
                     playbackId={video.muxPlayBackId}
                     thumbnailUrl={video.thumbnailUrl}
                 />

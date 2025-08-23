@@ -140,8 +140,8 @@ export function VideosSectionSuspense() {
                                                 />
                                             </div>
                                             <div className="flex flex-col overflow-hidden gap-y-1">
-                                                <span className="text-sm">{video.title}</span>
-                                                <span className="text-xs text-muted-foreground">{video.description || "No description"}</span>
+                                                <span className="text-sm line-clamp-1">{video.title}</span>
+                                                <span className="text-xs text-muted-foreground line-clamp-2">{video.description || "No description"}</span>
                                             </div>
                                         </div>
                                     </TableCell>
