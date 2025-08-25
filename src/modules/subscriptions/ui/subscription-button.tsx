@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Bell, BellIcon, BellOffIcon, BellRingIcon, ChevronDownIcon, UserMinus } from "lucide-react";
 
 interface SubscriptionsButtonProps {
-    onClick: ButtonProps["onClick"];
+    onClick: () => void;
     disabled: boolean;
     isSubscribed: boolean;
     className?: string;
@@ -26,7 +26,7 @@ export default function SubscriptionsButton({
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="secondary"
-                            className="rounded-full"
+                            className="rounded-full outline-none focus:outline-none"
                         >
                             <BellIcon />
                             <p>구독중</p>
@@ -46,7 +46,7 @@ export default function SubscriptionsButton({
                             <BellOffIcon />
                             <p>없음</p>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={onClick}>
                             <UserMinus />
                             <p>구독취소</p>
                         </DropdownMenuItem>

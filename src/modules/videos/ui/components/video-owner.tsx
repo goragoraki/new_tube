@@ -7,13 +7,20 @@ import { useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import SubscriptionsButton from "@/modules/subscriptions/ui/subscription-button";
 import UserInfo from "@/modules/users/ui/components/user-info";
+import { useSubscriptions } from "@/modules/subscriptions/hooks/use-subscription";
 
 interface VideoOwnerProps {
     user: VideoGetOneOutput["users"];
     videoId: string;
 }
 export default function VideoOwner({ user, videoId }: VideoOwnerProps) {
-    const { userId: clerkId } = useAuth();
+    const { userId: clerkId, isLoaded } = useAuth();
+    const { isPending, onClick } = useSubscriptions({
+        userId: user.id,
+        isSubscribed: user.viewerSubscribed,
+        fromVideoId: videoId,
+    })
+
     return (
         <div className="flex items-center justify-between sm:justify-start gap-3 min-w-0">
             <Link href={`/users/${user.id}`}>
@@ -22,12 +29,12 @@ export default function VideoOwner({ user, videoId }: VideoOwnerProps) {
                     <div className="flex flex-col min-w-0">
                         <UserInfo name={user.name} size="lg" />
                         {/** todo 구독자 명시하기 */}
-                        <span className="text-sm text-muted-foreground font-medium">구독자 {0}명</span>
+                        <span className="text-sm text-muted-foreground font-medium">구독자 {user.subscriberCount}명</span>
                     </div>
                 </div>
             </Link>
             {/** todo 구독중 고려하기*/}
-            {user.clerkId !== clerkId ? (
+            {user.clerkId === clerkId ? (
                 <Button
                     className="rounded-full"
                     asChild
@@ -38,9 +45,9 @@ export default function VideoOwner({ user, videoId }: VideoOwnerProps) {
                 </Button>
             ) : (
                 <SubscriptionsButton
-                    onClick={() => { }}
-                    disabled={false}
-                    isSubscribed={false}
+                    onClick={onClick}
+                    disabled={isPending || !isLoaded}
+                    isSubscribed={user.viewerSubscribed}
                     className="rounded-full"
                     size="default"
                 />
