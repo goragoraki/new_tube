@@ -8,6 +8,7 @@ import VideoDiscription from "./video-description";
 import { useMemo } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VideoTopRowProps {
     video: VideoGetOneOutput
@@ -59,4 +60,25 @@ export default function VideoTopRow({ video }: VideoTopRowProps) {
             />
         </div>
     );
+}
+
+export const VideoTopRowSkeleton = () => {
+    return (
+        <div className="flex flex-col gap-4 mt-4">
+            <div className="flex flex-col gap-2">
+                <Skeleton className="h-6 w-3/5 md:w-2/5" />
+            </div>
+            <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-3 w-[70%]">
+                    <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                    <div className="flex flex-col gap-1 w-full">
+                        <Skeleton className="h-3 w-4/5 md:w-[20%]" />
+                        <Skeleton className="h-3 w-3/5 md:w-[10%]" />
+                    </div>
+                </div>
+                <Skeleton className="h-9 w-2/6 md:1/6 rounded-full" />
+            </div>
+            <div className="h-[120px] w-full" />
+        </div>
+    )
 }

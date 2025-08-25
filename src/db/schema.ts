@@ -26,6 +26,7 @@ export const userRelations = relations(users, ({ many }) => ({
     subscribers: many(subscriptions, {
         relationName: "subscriptions_creator_id_fkey"
     }),
+    comments: many(comments),
 }))
 
 export const subscriptions = pgTable("subscriptions", {
@@ -41,12 +42,12 @@ export const subscriptions = pgTable("subscriptions", {
 ])
 
 export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
-    viewerId: one(users, {
+    viewer: one(users, {
         fields: [subscriptions.viewerId],
         references: [users.id],
         relationName: "subscriptions_viewer_id_fkey"
     }),
-    creatorId: one(users, {
+    creator: one(users, {
         fields: [subscriptions.creatorId],
         references: [users.id],
         relationName: "subscriptions_creator_id_fkey"
@@ -114,7 +115,32 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
     }),
     views: many(videoViews),
     reactions: many(videoReactions),
+    comments: many(comments),
 }))
+
+export const comments = pgTable("comments", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    videoId: uuid("video_id").references(() => videos.id, { onDelete: "cascade" }).notNull(),
+    value: text("comments").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+    user: one(users, {
+        fields: [comments.userId],
+        references: [users.id]
+    }),
+    video: one(videos, {
+        fields: [comments.videoId],
+        references: [videos.id]
+    })
+}))
+
+export const commentsSelectSchema = createSelectSchema(comments);
+export const commentsInsertSchema = createInsertSchema(comments).omit({ userId: true }); // insert 시 필요한 필드 검증 (ex: userId, videoId 필수)
+export const commentsUpdateSchema = createUpdateSchema(comments); // update 시변경 가능한 필드검증
 
 export const videoViews = pgTable("video_views", {
     userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
