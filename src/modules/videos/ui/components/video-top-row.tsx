@@ -4,7 +4,7 @@ import { VideoGetOneOutput } from "../../type";
 import VideoOwner from "./video-owner";
 import VideoReactions from "./video-reactions";
 import VideoMenu from "./video-menu";
-import VideoDiscription from "./video-description";
+import VideoDiscription, { VideoDescriptionSkeleton } from "./video-description";
 import { useMemo } from "react";
 import { format, formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -78,7 +78,9 @@ export const VideoTopRowSkeleton = () => {
                 </div>
                 <Skeleton className="h-9 w-2/6 md:1/6 rounded-full" />
             </div>
-            <div className="h-[120px] w-full" />
+            <div className="h-[120px] w-full bg-secondary/50 rounded-xl">
+                <VideoDescriptionSkeleton />
+            </div>
         </div>
     )
 }

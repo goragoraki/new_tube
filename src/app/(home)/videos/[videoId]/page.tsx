@@ -1,3 +1,4 @@
+import { DEFAULT_LIMIT } from "@/constants";
 import VideoView from "@/modules/videos/ui/views/video-view";
 import { getQueryClient, HydrateClient, trpc } from "@/trpc/server";
 
@@ -12,8 +13,7 @@ export default async function Page({ params }: PageProps) {
 
     const queryClient = getQueryClient();
     void queryClient.prefetchQuery(trpc.videos.getOne.queryOptions({ id: videoId }))
-    //TODO: dont forget to change to prefetchInfinite!!
-    void queryClient.prefetchQuery(trpc.comments.getMany.queryOptions({ videoId }))
+    void queryClient.prefetchInfiniteQuery(trpc.comments.getMany.infiniteQueryOptions({ videoId, limit: DEFAULT_LIMIT }))
 
     return (
         <HydrateClient>

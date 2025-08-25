@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -54,4 +55,16 @@ export default function VideoDiscription({
             </div>
         </div>
     );
+}
+
+export const VideoDescriptionSkeleton = () => {
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+                <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-3 w-10" />
+        </div>
+    )
 }

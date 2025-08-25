@@ -1,7 +1,6 @@
 import { useTRPC } from "@/trpc/client";
 import { useClerk } from "@clerk/nextjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { tracingChannel } from "diagnostics_channel";
 import { toast } from "sonner";
 
 interface UseSubscriptionsProps {
