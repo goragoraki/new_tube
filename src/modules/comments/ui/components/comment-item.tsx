@@ -9,22 +9,30 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { FlagIcon, MoreVerticalIcon, ThumbsDownIcon, ThumbsUpIcon, Trash2Icon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, FlagIcon, MoreVerticalIcon, ThumbsDownIcon, ThumbsUpIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { comments } from "@/db/schema";
+import { useState } from "react";
+import CommentForm from "./comment-from";
+import CommentReplies from "./comment-replies";
 
 interface CommentItemProps {
     comment: CommentsGetManyOuput["items"][number];
+    variant?: "reply" | "comment";
 }
 export default function CommentItem({
     comment,
+    variant = "comment",
 }: CommentItemProps) {
     const trpc = useTRPC();
     const queryClient = useQueryClient();
     const { userId: userClerkId } = useAuth();
     const clerk = useClerk();
+
+    const [isReplyOpen, setIsReplyOpen] = useState(false);
+    const [isRepliesOpen, setIsRepliesOpen] = useState(false);
+
 
     const remove = useMutation(trpc.comments.remove.mutationOptions({
         onSuccess: () => {
@@ -71,7 +79,7 @@ export default function CommentItem({
             <div className="flex gap-4">
                 <Link href={`/users/${comment.userId}`}>
                     <UserAvatar
-                        size="lg"
+                        size={variant === "comment" ? "lg" : "sm"}
                         imageUrl={comment.user.imageUrl}
                         name={comment.user.name}
                     />
@@ -124,6 +132,16 @@ export default function CommentItem({
                             </Button>
                             <span className="text-xs text-muted-foreground">{comment.dislikeCount}</span>
                         </div>
+                        {variant === "comment" && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="rounded-full h-8"
+                                onClick={() => setIsReplyOpen(true)}
+                            >
+                                답글
+                            </Button>
+                        )}
                     </div>
                 </div>
                 <DropdownMenu modal={false}>
@@ -151,6 +169,41 @@ export default function CommentItem({
                         }
                     </DropdownMenuContent>
                 </DropdownMenu>
+            </div>
+            {isReplyOpen && variant === "comment" && (
+                <div className="mt-4 pl-14">
+                    <CommentForm
+                        videoId={comment.videoId}
+                        variant="reply"
+                        parentId={comment.id}
+                        onCancel={() => setIsReplyOpen(false)}
+                        onSuccess={() => {
+                            setIsReplyOpen(false);
+                            setIsRepliesOpen(true);
+                        }}
+                    />
+                </div>
+            )}
+            <div className="pl-14">
+                {comment.replyCount > 0 && variant === "comment" && (
+                    <Button
+                        size="sm"
+                        variant="teriary"
+                        onClick={() => setIsRepliesOpen((cur) => !cur)}
+                        className="rounded-full"
+                    >
+                        {isRepliesOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                        답글 {comment.replyCount}개
+                    </Button>
+                )}
+                {
+                    comment.replyCount > 0 && variant === "comment" && isRepliesOpen && (
+                        <CommentReplies
+                            parentId={comment.id}
+                            videoId={comment.videoId}
+                        />
+                    )
+                }
             </div>
         </div>
     );

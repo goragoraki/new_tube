@@ -15,12 +15,18 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 
 interface CommentFormProps {
     videoId: string;
+    parentId?: string;
     onSuccess?: () => void;
+    onCancel?: () => void;
+    variant?: "comment" | "reply";
 }
 
 export default function CommentForm({
     videoId,
+    parentId,
     onSuccess,
+    onCancel,
+    variant = "comment"
 }: CommentFormProps) {
     const { user } = useUser();
     const clerk = useClerk();
@@ -30,16 +36,21 @@ export default function CommentForm({
     const form = useForm<z.infer<typeof commentsInsertSchema>>({
         resolver: zodResolver(commentsInsertSchema),
         defaultValues: {
+            parentId: parentId,
             videoId,
             value: "",
         },
     })
 
     const create = useMutation(trpc.comments.create.mutationOptions({
-        onSuccess: () => {
+        onSuccess: (variables) => {
             queryClient.invalidateQueries(trpc.comments.getMany.infiniteQueryFilter({ videoId }));
             form.reset();
-            toast.success("댓글 저장 완료");
+            let successMessage = "댓글 작성 완료"
+            if (variables.parentId) {
+                successMessage = "답글 작성 완료"
+            }
+            toast.success(successMessage);
             onSuccess?.();
         },
         onError: (error) => {
@@ -51,6 +62,11 @@ export default function CommentForm({
 
     const handleSubmit = (values: z.infer<typeof commentsInsertSchema>) => {
         create.mutate(values)
+    }
+
+    const handleCancel = () => {
+        form.reset();
+        onCancel?.();
     }
 
     return (
@@ -73,7 +89,7 @@ export default function CommentForm({
                                 <FormControl>
                                     <Textarea
                                         {...field}
-                                        placeholder="댓글 추가...."
+                                        placeholder={variant === "reply" ? "답글 추가..." : "댓글 추가..."}
                                         className="resize-none bg-transparent overflow-hidden min-h-0"
                                     />
                                 </FormControl>
@@ -82,12 +98,25 @@ export default function CommentForm({
                         )}
                     />
                     <div className="flex justify-end gap-2 mt-2">
+                        {
+                            onCancel && (
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={handleCancel}
+                                    className="rounded-full px-4 py-2"
+                                >
+                                    취소
+                                </Button>
+                            )
+                        }
                         <Button
                             disabled={create.isPending || !form.getValues("value")}
                             type="submit"
                             size="sm"
+                            className="bg-[#48a9f8] text-black/80 disabled:bg-gray-500 disabled:text-white hover:bg-opacity-80 rounded-full px-4 py-2"
                         >
-                            댓글
+                            {variant === "reply" ? "답글" : "댓글"}
                         </Button>
                     </div>
                 </div>

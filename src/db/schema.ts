@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { integer, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { foreignKey, integer, pgEnum, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import {
     createInsertSchema,
     createUpdateSchema,
@@ -123,11 +123,21 @@ export const videoRelations = relations(videos, ({ one, many }) => ({
 
 export const comments = pgTable("comments", {
     id: uuid("id").primaryKey().defaultRandom(),
+    parentId: uuid("praent_id"),
     userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     videoId: uuid("video_id").references(() => videos.id, { onDelete: "cascade" }).notNull(),
     value: text("comments").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (t) => {
+    return [
+        foreignKey({
+            name: "comments_parent_id_fkey",
+            columns: [t.parentId],
+            foreignColumns: [t.id],
+        })
+            .onDelete("cascade"),
+    ]
 })
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
@@ -139,7 +149,15 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
         fields: [comments.videoId],
         references: [videos.id]
     }),
-    reaction: many(commentReactions)
+    parent: one(comments, {
+        fields: [comments.parentId],
+        references: [comments.id],
+        relationName: "comments_parent_id_fkey"
+    }),
+    reactions: many(commentReactions),
+    replies: many(comments, {
+        relationName: "comments_parent_id_fkey"
+    })
 }))
 
 export const commentsSelectSchema = createSelectSchema(comments);
@@ -147,8 +165,8 @@ export const commentsInsertSchema = createInsertSchema(comments).omit({ userId: 
 export const commentsUpdateSchema = createUpdateSchema(comments); // update 시변경 가능한 필드검증
 
 export const commentReactions = pgTable("comment_reactions", {
-    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
-    commentsId: uuid("comments_id").references(() => comments.id, { onDelete: "cascade" }),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    commentsId: uuid("comments_id").references(() => comments.id, { onDelete: "cascade" }).notNull(),
     type: reactionType("type").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
