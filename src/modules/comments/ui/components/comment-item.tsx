@@ -9,9 +9,11 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MessagesSquareIcon, MoreVerticalIcon, Trash2Icon } from "lucide-react";
+import { FlagIcon, MoreVerticalIcon, ThumbsDownIcon, ThumbsUpIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth, useClerk } from "@clerk/nextjs";
+import { cn } from "@/lib/utils";
+import { comments } from "@/db/schema";
 
 interface CommentItemProps {
     comment: CommentsGetManyOuput["items"][number];
@@ -28,6 +30,32 @@ export default function CommentItem({
         onSuccess: () => {
             toast.success("댓글 삭제 완료")
             queryClient.invalidateQueries(trpc.comments.getMany.infiniteQueryFilter({ videoId: comment.videoId }))
+        },
+        onError: (error) => {
+            if (error.data?.code === "UNAUTHORIZED") {
+                clerk.openSignIn();
+            } else {
+                toast.error(error.message)
+            }
+        }
+    }))
+
+    const like = useMutation(trpc.commentReactions.like.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries(trpc.comments.getMany.infiniteQueryFilter({ videoId: comment.videoId }));
+        },
+        onError: (error) => {
+            if (error.data?.code === "UNAUTHORIZED") {
+                clerk.openSignIn();
+            } else {
+                toast.error(error.message)
+            }
+        }
+    }))
+
+    const dislike = useMutation(trpc.commentReactions.dislike.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries(trpc.comments.getMany.infiniteQueryFilter({ videoId: comment.videoId }));
         },
         onError: (error) => {
             if (error.data?.code === "UNAUTHORIZED") {
@@ -65,19 +93,54 @@ export default function CommentItem({
                     <p className="text-sm whitespace-pre-line">
                         {comment.value}
                     </p>
-                    {/*Todo reaction */}
+                    <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center">
+                            <Button
+                                disabled={false}
+                                variant="ghost"
+                                size="icon"
+                                className="size-8 rounded-full hover:bg-gray-200"
+                                onClick={() => like.mutate({ commentId: comment.id })}
+                            >
+                                <ThumbsUpIcon
+                                    className={cn(
+                                        comment.viewerReaction === "like" && "fill-black"
+                                    )}
+                                />
+                            </Button>
+                            <span className="text-xs text-muted-foreground">{comment.likeCount}</span>
+                            <Button
+                                disabled={false}
+                                variant="ghost"
+                                size="icon"
+                                className="size-8 rounded-full hover:bg-gray-200"
+                                onClick={() => dislike.mutate({ commentId: comment.id })}
+                            >
+                                <ThumbsDownIcon
+                                    className={cn(
+                                        comment.viewerReaction === "dislike" && "fill-black"
+                                    )}
+                                />
+                            </Button>
+                            <span className="text-xs text-muted-foreground">{comment.dislikeCount}</span>
+                        </div>
+                    </div>
                 </div>
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                         <Button size="icon" variant="ghost" className="size-8" >
                             <MoreVerticalIcon />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => { }}>
-                            <MessagesSquareIcon className="size-4" />
-                            답글
-                        </DropdownMenuItem>
+                        {
+                            comment.user.clerkId !== userClerkId && (
+                                <DropdownMenuItem onClick={() => { }}>
+                                    <FlagIcon className="size-4" />
+                                    신고
+                                </DropdownMenuItem>
+                            )
+                        }
                         {
                             comment.user.clerkId === userClerkId && (
                                 <DropdownMenuItem onClick={() => remove.mutate({ commentId: comment.id })}>

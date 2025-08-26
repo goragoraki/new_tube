@@ -2,7 +2,7 @@ import z from "zod"
 
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { db } from "@/db";
-import { reactionType, videoReactions } from "@/db/schema";
+import { videoReactions } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 
 
