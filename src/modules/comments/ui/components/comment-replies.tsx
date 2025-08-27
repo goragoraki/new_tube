@@ -5,7 +5,8 @@ import { useTRPC } from "@/trpc/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import CommentItem from "./comment-item";
 import { InfiniteScroll } from "@/components/inifinite-scroll";
-import { Loader2Icon } from "lucide-react";
+import { CornerDownRightIcon, Loader2Icon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface CommentRepliesProps {
     parentId: string;
@@ -43,12 +44,20 @@ export default function CommentReplies({
                         comment={comment}
                     />
                 ))}
-            <InfiniteScroll
-                isManual
-                hasNextPage={hasNextPage}
-                isFetchingNextPage={isFetchingNextPage}
-                fetchNextPage={fetchNextPage}
-            />
+            <div>
+                {hasNextPage && (
+                    <Button
+                        variant="teriary"
+                        size="sm"
+                        onClick={() => fetchNextPage()}
+                        disabled={isFetchingNextPage}
+                    >
+                        <CornerDownRightIcon />
+                        답글 더보기
+                    </Button>
+                )}
+
+            </div>
         </div>
     );
 }

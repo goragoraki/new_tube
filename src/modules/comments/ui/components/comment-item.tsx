@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import CommentForm from "./comment-from";
+import CommentForm from "./comment-form";
 import CommentReplies from "./comment-replies";
 
 interface CommentItemProps {

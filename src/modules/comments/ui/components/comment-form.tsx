@@ -45,6 +45,7 @@ export default function CommentForm({
     const create = useMutation(trpc.comments.create.mutationOptions({
         onSuccess: (variables) => {
             queryClient.invalidateQueries(trpc.comments.getMany.infiniteQueryFilter({ videoId }));
+            queryClient.invalidateQueries(trpc.comments.getMany.infiniteQueryFilter({ videoId, parentId }));
             form.reset();
             let successMessage = "댓글 작성 완료"
             if (variables.parentId) {

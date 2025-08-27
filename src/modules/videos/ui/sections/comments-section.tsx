@@ -2,7 +2,7 @@
 
 import { InfiniteScroll } from "@/components/inifinite-scroll";
 import { DEFAULT_LIMIT } from "@/constants";
-import CommentForm from "@/modules/comments/ui/components/comment-from";
+import CommentForm from "@/modules/comments/ui/components/comment-form";
 import CommentItem from "@/modules/comments/ui/components/comment-item";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
