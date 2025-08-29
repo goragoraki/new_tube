@@ -21,13 +21,15 @@ interface FilterCarouselProps {
         value: string;
         label: string;
     }[];
+    size?: "default" | "compact"
 }
 
 export const FilterCarousel = ({
     value,
     isLoading,
     onSelect,
-    data
+    data,
+    size = "default"
 }: FilterCarouselProps) => {
     console.log(value)
     const [api, setApi] = useState<CarouselApi>();
@@ -52,8 +54,9 @@ export const FilterCarousel = ({
             {/** left fade */}
             <div
                 className={cn(
-                    "absolute left-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-white to-transparent pointer-events-none",
-                    current === 1 && "hidden"
+                    size === "default" && "absolute left-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-white to-transparent pointer-events-none",
+                    size === "compact" && "absolute left-8 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-white to-transparent pointer-events-none",
+                    current <= 2 && "hidden",
                 )}
             />
             <Carousel
@@ -62,7 +65,12 @@ export const FilterCarousel = ({
                     align: "start",
                     dragFree: true,
                 }}
-                className="w-full px-12"
+                className={cn(
+                    size === "default" && "w-full px-12",
+                    size === "compact" && "pr-8 w-full",
+                    current !== 1 && size === "compact" && "px-8"
+                )}
+
             >
                 <CarouselContent className="-ml-3">
                     {!isLoading && (
@@ -104,14 +112,15 @@ export const FilterCarousel = ({
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-0 z-20" />
-                <CarouselNext className="right-0 z-20" />
+                <CarouselPrevious className="left-0 z-20" variant="ghost" />
+                <CarouselNext className="right-0 z-20" variant="ghost" />
             </Carousel>
 
             {/** right fade */}
             <div
                 className={cn(
-                    "absolute right-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-white to-transparent pointer-events-none",
+                    size === "default" && "absolute right-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-white to-transparent pointer-events-none",
+                    size === "compact" && "absolute right-8 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-white to-transparent pointer-events-none",
                     current === count && "hidden"
                 )}
             />

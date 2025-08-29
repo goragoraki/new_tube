@@ -8,24 +8,25 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary"
 
 interface CategoriesSectionProps {
-    categoryId?: string
+    categoryId?: string;
+    size?: "default" | "compact"
 }
 
-export default function CategoriesSection({ categoryId }: CategoriesSectionProps) {
+export default function CategoriesSection({ categoryId, size }: CategoriesSectionProps) {
     return (
         <Suspense fallback={<CategoriesSkeleton />}>
             <ErrorBoundary fallback={<p>something error..</p>}>
-                <CategoriesSectionSuspense categoryId={categoryId} />
+                <CategoriesSectionSuspense categoryId={categoryId} size={size} />
             </ErrorBoundary>
         </Suspense>
     );
 }
 
 const CategoriesSkeleton = () => {
-    return <FilterCarousel isLoading data={[]} onSelect={() => { }} size="compact" />
+    return <FilterCarousel isLoading data={[]} onSelect={() => { }} />
 }
 
-function CategoriesSectionSuspense({ categoryId }: CategoriesSectionProps) {
+function CategoriesSectionSuspense({ categoryId, size }: CategoriesSectionProps) {
     const { data: categories } = useSuspenseQuery(useTRPC().categories.getMany.queryOptions())
     const data = categories.map(category => ({
         value: category.id,
@@ -43,9 +44,6 @@ function CategoriesSectionSuspense({ categoryId }: CategoriesSectionProps) {
         router.push(url.toString());
     }
     return (
-        <FilterCarousel value={categoryId} data={data} onSelect={onSelect} />
+        <FilterCarousel value={categoryId} data={data} onSelect={onSelect} size={size} />
     );
 }
-
-//이렇게 suspense를 home view에서 감싸지 않고 여기서 따로 만들어서 해주는이유?
-// useSuspenseQuery를 사용할때 suspense errorboundary를 까먹지 않기위해서
