@@ -11,7 +11,7 @@ interface VideoMenuProps {
 }
 export default function VideoMenu({
     videoId,
-    variant,
+    variant = "ghost",
     onRemove,
 }: VideoMenuProps) {
     const onShare = () => {
@@ -20,7 +20,7 @@ export default function VideoMenu({
         toast.success("링크 복사완료")
     }
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
                 <Button
                     className="w-9 rounded-full"

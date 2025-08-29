@@ -14,6 +14,7 @@ export default async function Page({ params }: PageProps) {
     const queryClient = getQueryClient();
     void queryClient.prefetchQuery(trpc.videos.getOne.queryOptions({ id: videoId }))
     void queryClient.prefetchInfiniteQuery(trpc.comments.getMany.infiniteQueryOptions({ videoId, limit: DEFAULT_LIMIT }))
+    void queryClient.prefetchInfiniteQuery(trpc.suggestions.getMany.infiniteQueryOptions({ videoId, limit: DEFAULT_LIMIT }))
 
     return (
         <HydrateClient>

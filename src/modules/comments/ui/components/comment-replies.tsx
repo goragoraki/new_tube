@@ -4,7 +4,6 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { useTRPC } from "@/trpc/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import CommentItem from "./comment-item";
-import { InfiniteScroll } from "@/components/inifinite-scroll";
 import { CornerDownRightIcon, Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
