@@ -164,6 +164,18 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
         }
     }))
 
+    const revalidate = useMutation(trpc.videos.revalidate.mutationOptions({
+        onSuccess: () => {
+            queryClient.invalidateQueries(
+                trpc.studio.getMany.queryFilter()
+            )
+            queryClient.invalidateQueries(
+                trpc.studio.getOne.queryFilter({ id: videoId })
+            )
+            toast.success("비디오 새로고침 완료");
+        }
+    }))
+
     const remove = useMutation(trpc.videos.remove.mutationOptions({
         onSuccess: () => {
             queryClient.invalidateQueries(
@@ -245,6 +257,10 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => revalidate.mutate({ id: videoId })} className=" cursor-pointer">
+                                        <RotateCcwIcon className="size-4 mr-2" />
+                                        <p>새로고침</p>
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => remove.mutate({ id: videoId })} className=" cursor-pointer">
                                         <TrashIcon className="size-4 mr-2" />
                                         <p>삭제</p>
