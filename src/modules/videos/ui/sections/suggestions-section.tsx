@@ -3,9 +3,11 @@
 import { DEFAULT_LIMIT } from "@/constants";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import VideoRowCard from "../components/video-row-card";
-import VideoGridCard from "../components/video-grid-card";
+import VideoRowCard, { VideoRowCardSkeleton } from "../components/video-row-card";
+import VideoGridCard, { VideoGridCardSkeleton } from "../components/video-grid-card";
 import { InfiniteScroll } from "@/components/inifinite-scroll";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface SuggestionsSectionProps {
     videoId: string;
@@ -13,6 +15,36 @@ interface SuggestionsSectionProps {
 };
 
 export default function SuggestionsSection({
+    videoId,
+    isManual,
+}: SuggestionsSectionProps) {
+    return (
+        <Suspense fallback={<SuggestionsSectionSkeleton />}>
+            <ErrorBoundary fallback={<p>loading.....</p>}>
+                <SuggestionsSectionSuspense videoId={videoId} isManual={isManual} />
+            </ErrorBoundary>
+        </Suspense>
+    )
+}
+
+function SuggestionsSectionSkeleton() {
+    return (
+        <>
+            <div className="hidden md:block space-y-2">
+                {Array.from({ length: 6 }).map((_, index) => (
+                    <VideoRowCardSkeleton key={index} size="compact" />
+                ))}
+            </div>
+            <div className="block md:hidden space-y-2">
+                {Array.from({ length: 6 }).map((_, index) => (
+                    <VideoGridCardSkeleton key={index} />
+                ))}
+            </div>
+        </>
+    )
+}
+
+function SuggestionsSectionSuspense({
     videoId,
     isManual,
 }: SuggestionsSectionProps) {

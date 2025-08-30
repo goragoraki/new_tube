@@ -1,14 +1,13 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { cva, type VariantProps } from "class-variance-authority";
 import Link from "next/link";
-import { Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import { VideoGetManyOutput } from "../../type";
-import { ErrorBoundary } from "react-error-boundary";
-import { VideoTumbnail } from "./video-thumbnail";
+import { VideoThumnailSkeleton, VideoTumbnail } from "./video-thumbnail";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import VideoMenu from "./video-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 const videoRowCardVarients = cva("group flex min-w-0", {
@@ -105,6 +104,41 @@ export default function VideoRowCard({
 
             </Link>
 
+        </div>
+    )
+}
+
+export const VideoRowCardSkeleton = ({ size }: VariantProps<typeof videoRowCardVarients>) => {
+    return (
+        <div className={videoRowCardVarients({ size })}>
+            <div className={thumbnailVariants({ size })}>
+                <VideoThumnailSkeleton />
+            </div>
+
+            <div className="flex-1 min-w-0">
+                <div className="flex justify-between gap-x-2">
+                    <div className="flex-1 min-w-0">
+                        <Skeleton
+                            className={cn("h-5 w-[40%]", size === "compact" && "h-4 w-[40%]")}
+                        />
+                        {size === "default" && (
+                            <>
+                                <Skeleton className="h-4 w-[20%] mt-1" />
+                                <div className="flex items-center gap-2 my-3">
+                                    <Skeleton className="size-8 rounded-full" />
+                                    <Skeleton className="h-4 w-24" />
+                                </div>
+                            </>
+                        )}
+                        {size === "compact" && (
+                            <>
+                                <Skeleton className="h-4 w-[50%] mt-1" />
+                            </>
+                        )}
+                    </div>
+                </div>
+
+            </div>
         </div>
     )
 }
