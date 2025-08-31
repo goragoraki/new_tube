@@ -1,3 +1,5 @@
+"use client"
+
 import { cva, type VariantProps } from "class-variance-authority";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -118,7 +120,7 @@ export default function VideoRowCard({
     )
 }
 
-export const VideoRowCardSkeleton = ({ size }: VariantProps<typeof videoRowCardVarients>) => {
+export const VideoRowCardSkeleton = ({ size = "default" }: VariantProps<typeof videoRowCardVarients>) => {
     return (
         <div className={videoRowCardVarients({ size })}>
             <div className={thumbnailVariants({ size })}>

@@ -1,7 +1,4 @@
-
-import Link from "next/link";
 import { VideoGetManyOutput } from "../../type";
-import { VideoTumbnail } from "./video-thumbnail";
 import { useMemo } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";

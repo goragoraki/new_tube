@@ -216,7 +216,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
     }
 
     // Todo: vercel로 배포시 바꿔줘야함 
-    const fullUrl = `${APP_URL || "http://localhosts:3000"}/videos/${videoId}`
+    const fullUrl = `${APP_URL}/videos/${videoId}`
     const [isCopied, setIsCopied] = useState(false);
 
     const onCopy = async () => {
