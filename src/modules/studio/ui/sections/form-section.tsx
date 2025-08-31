@@ -45,6 +45,7 @@ import { THUMBNAIL_FALLBACK } from "@/modules/videos/constants";
 import ThumbnailUploadModal from "../components/thumbnail-upload-modal";
 import ThumbnailGenerateModal from "../components/thumbnail-generate-modal";
 import { Skeleton } from "@/components/ui/skeleton";
+import { APP_URL } from "@/constants";
 
 interface FormSectionProps {
     videoId: string
@@ -215,7 +216,7 @@ function FormSectionSuspense({ videoId }: FormSectionProps) {
     }
 
     // Todo: vercel로 배포시 바꿔줘야함 
-    const fullUrl = `${process.env.VERCEL_URL || "http://localhosts:3000"}/videos/${videoId}`
+    const fullUrl = `${APP_URL || "http://localhosts:3000"}/videos/${videoId}`
     const [isCopied, setIsCopied] = useState(false);
 
     const onCopy = async () => {

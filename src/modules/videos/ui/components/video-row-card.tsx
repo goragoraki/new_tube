@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import VideoMenu from "./video-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserAvatar } from "@/components/user-avatar";
 
 
 const videoRowCardVarients = cva("group flex min-w-0", {
@@ -41,7 +42,7 @@ interface VideoRowCardProps extends VariantProps<typeof videoRowCardVarients> {
 
 export default function VideoRowCard({
     data,
-    size,
+    size = "default",
     onRemove,
 }: VideoRowCardProps) {
     const compactDate = useMemo(() => {
@@ -77,15 +78,24 @@ export default function VideoRowCard({
                             {data.title}
                         </h3>
                         {size === "default" && (
-                            <p className="text-xs text-muted-foreground px-[2px]">
-                                {data.user.name}
-                            </p>
-                        )}
-                        {size === "default" && (
                             <p className="text-xs text-muted-foreground mt-1">
                                 {`조회수 ${compactViews}회 • ${compactDate}`}
                             </p>
                         )}
+                        {size === "default" && (
+                            <div className="flex gap-1 mt-4 items-center">
+                                <UserAvatar imageUrl={data.user.imageUrl} name={data.user.name} />
+                                <p className="text-sm text-muted-foreground px-[2px]">
+                                    {data.user.name}
+                                </p>
+                            </div>
+                        )}
+                        {size === "default" && (
+                            <p className="text-xs text-muted-foreground mt-4 line-clamp-1">
+                                {data.description}
+                            </p>
+                        )}
+
                         {size === "compact" && (
                             <p className="text-xs text-muted-foreground px-[2px]">
                                 {data.user.name}
