@@ -31,6 +31,7 @@ export const searchRouter = createTRPCRouter({
                 .from(videos)
                 .innerJoin(users, eq(videos.userId, users.id))
                 .where(and(
+                    eq(videos.visibility, "public"),
                     query ? ilike(videos.title, `%${query}%`) : undefined,
                     categoryId ? eq(videos.categoryId, categoryId) : undefined,
                     cursor

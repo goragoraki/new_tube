@@ -1,3 +1,4 @@
+import { DEFAULT_LIMIT } from "@/constants";
 import HomeView from "@/modules/home/ui/views/home-view";
 import { getQueryClient, HydrateClient, trpc } from "@/trpc/server";
 
@@ -14,6 +15,10 @@ export default async function Page({ searchParams }: PageProps) {
 
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.categories.getMany.queryOptions())
+  void queryClient.prefetchInfiniteQuery(trpc.videos.getMany.infiniteQueryOptions({
+    categoryId: categoryId,
+    limit: DEFAULT_LIMIT,
+  }))
   //tip! prefetch 를할때 같이 HydarteClient 를 넣어줘서 실수로 까먹는걸 방지!
   return (
     <HydrateClient>

@@ -1,4 +1,5 @@
 import CategoriesSection from "../sections/categories-section";
+import HomeVideosSection from "../sections/home-videos-section";
 
 interface HomeViewProps {
     categoryId?: string
@@ -7,6 +8,7 @@ export default function HomeView({ categoryId }: HomeViewProps) {
     return (
         <div className="max-w-[2400px] px-4 pt-2.5 mb-10 flex flex-col gap-y-6 border mx-auto border-none">
             <CategoriesSection categoryId={categoryId} />
+            <HomeVideosSection categoryId={categoryId} />
         </div>
     );
 }
