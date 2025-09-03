@@ -29,7 +29,7 @@ export default function VideoReactions({
     const like = useMutation(trpc.videoReactions.like.mutationOptions({
         onSuccess: () => {
             queryClient.invalidateQueries(trpc.videos.getOne.queryFilter({ id: videoId }));
-            {/** todo: invalidate "ilked" playlist */ }
+            queryClient.invalidateQueries(trpc.playlists.getLiked.infiniteQueryFilter());
         },
         onError: (error) => {
             if (error.data?.code === "UNAUTHORIZED") {
@@ -41,6 +41,7 @@ export default function VideoReactions({
     const dislike = useMutation(trpc.videoReactions.dislike.mutationOptions({
         onSuccess: () => {
             queryClient.invalidateQueries(trpc.videos.getOne.queryFilter({ id: videoId }));
+            queryClient.invalidateQueries(trpc.playlists.getLiked.infiniteQueryFilter());
         },
         onError: (error) => {
             if (error.data?.code === "UNAUTHORIZED") {

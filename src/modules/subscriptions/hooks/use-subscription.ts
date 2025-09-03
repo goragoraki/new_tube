@@ -21,7 +21,7 @@ export const useSubscriptions = ({
         onSuccess: () => {
             toast.success("구독함");
             //todo: reinvalidate subscriptions.getMany, users.getOne
-
+            queryClient.invalidateQueries(trpc.videos.getManySubscribed.queryFilter());
             if (fromVideoId) {
                 queryClient.invalidateQueries(trpc.videos.getOne.queryFilter({ id: fromVideoId }));
             }
@@ -38,6 +38,7 @@ export const useSubscriptions = ({
     const unsubscribe = useMutation(trpc.subscriptions.remove.mutationOptions({
         onSuccess: () => {
             toast.success("구독취소함");
+            queryClient.invalidateQueries(trpc.videos.getManySubscribed.queryFilter());
             if (fromVideoId) {
                 queryClient.invalidateQueries(trpc.videos.getOne.queryFilter({ id: fromVideoId }));
             }

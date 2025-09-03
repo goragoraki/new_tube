@@ -4,6 +4,7 @@ import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, Side
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { FlameIcon, HomeIcon, PlaySquareIcon } from "lucide-react"
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const items = [
     {
@@ -27,6 +28,7 @@ const items = [
 export function MainSection() {
     const { isSignedIn, userId } = useAuth();
     const clerk = useClerk();
+    const pathname = usePathname();
 
     return (
         <SidebarGroup>
@@ -36,7 +38,7 @@ export function MainSection() {
                         <SidebarMenuItem key={item.title}>
                             <SidebarMenuButton
                                 asChild // 이걸써서 밑에 링크가 렌더될수있도록함
-                                isActive={false} // todo : chanage to look at current pathname
+                                isActive={pathname === item.url} // todo : chanage to look at current pathname
                                 onClick={(e) => {
                                     if (!isSignedIn && item.auth) {
                                         e.preventDefault();
