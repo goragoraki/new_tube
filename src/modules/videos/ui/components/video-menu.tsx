@@ -26,6 +26,10 @@ export default function VideoMenu({
                 <Button
                     className="w-9 rounded-full"
                     variant={variant}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }}
                 >
                     <MoreHorizontalIcon />
                 </Button>

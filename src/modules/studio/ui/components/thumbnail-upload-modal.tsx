@@ -1,7 +1,7 @@
 'use client'
 
 import { ResponsiveModal } from "@/components/reponsive-dialog";
-import { UploadButton, UploadDropzone } from "@/lib/uploadthing";
+import { UploadDropzone } from "@/lib/uploadthing";
 import { useTRPC } from "@/trpc/client";
 import { useQueryClient } from "@tanstack/react-query";
 

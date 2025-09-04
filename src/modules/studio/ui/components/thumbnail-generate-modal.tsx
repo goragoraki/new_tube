@@ -3,9 +3,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { ResponsiveModal } from "@/components/reponsive-dialog";
-import { UploadButton, UploadDropzone } from "@/lib/uploadthing";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
     Form,
     FormControl,
