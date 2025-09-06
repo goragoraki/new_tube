@@ -5,6 +5,7 @@ import { ko } from "date-fns/locale";
 import { UserAvatar } from "@/components/user-avatar";
 import VideoMenu from "./video-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 interface VideoInfoProps {
     data: VideoGetManyOutput["items"][number];
@@ -28,8 +29,9 @@ export default function VideoInfo({
 
     return (
         <div className="flex gap-3">
+
             <UserAvatar imageUrl={data.user.imageUrl} name={data.user.name} />
-            <div className="flex-1 min-w-0">
+            <Link href={`/videos/${data.id}`} className="flex-1 min-w-0">
                 <h3 className="font-medium line-clamp-1 lg:line-clamp-2 text-base break-words">
                     {data.title}
                 </h3>
@@ -39,7 +41,7 @@ export default function VideoInfo({
                 <p className="text-xs text-muted-foreground mt-1 font-medium">
                     {`조회수 ${compactViews}회 • ${compactDate}`}
                 </p>
-            </div>
+            </Link>
             <div className="flex-shrink-0">
                 <VideoMenu videoId={data.id} onRemove={onRemove} />
             </div>

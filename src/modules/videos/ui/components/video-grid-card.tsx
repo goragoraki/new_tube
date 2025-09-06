@@ -13,16 +13,16 @@ export default function VideoGridCard({
     onRemove,
 }: VideoGridCardProps) {
     return (
-        <div>
-            <Link href={`/videos/${data.id}`} className="flex flex-col gap-2 w-full group">
+        <div className="flex flex-col gap-2 w-full group">
+            <Link href={`/videos/${data.id}`}>
                 <VideoTumbnail
                     imageUrl={data.thumbnailUrl || undefined}
                     previewUrl={data.previewUrl || undefined}
                     title={data.title}
                     duration={data.duration ?? 0}
                 />
-                <VideoInfo data={data} onRemove={onRemove} />
             </Link>
+            <VideoInfo data={data} onRemove={onRemove} />
         </div>
     )
 }
