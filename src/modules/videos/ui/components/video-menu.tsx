@@ -58,7 +58,9 @@ export default function VideoMenu({
                         저장
                     </DropdownMenuItem>
                     {onRemove && (
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={onRemove}
+                        >
                             <Trash2Icon className="mr-2 size-4" />
                             삭제
                         </DropdownMenuItem>

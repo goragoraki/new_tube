@@ -32,10 +32,12 @@ export default function PlaylistAddModal({
     }))
 
     const addVideo = useMutation(trpc.playlists.addVideo.mutationOptions({
-        onSuccess: () => {
+        onSuccess: (data) => {
             toast.success("재생목록에 비디오 추가")
             queryClient.invalidateQueries(trpc.playlists.getMany.infiniteQueryFilter());
             queryClient.invalidateQueries(trpc.playlists.getManyForVideo.infiniteQueryFilter({ videoId }));
+            queryClient.invalidateQueries(trpc.playlists.getOne.queryFilter({ playlistId: data.playlistId }))
+            queryClient.invalidateQueries(trpc.playlists.getVideos.infiniteQueryFilter({ playlistId: data.playlistId }))
         },
         onError: () => {
             toast.error("재생목록에 비디오 추가 실패")
@@ -43,10 +45,12 @@ export default function PlaylistAddModal({
     }))
 
     const removeVideo = useMutation(trpc.playlists.removeVideo.mutationOptions({
-        onSuccess: () => {
+        onSuccess: (data) => {
             toast.success("재생목록에서 비디오 삭제")
             queryClient.invalidateQueries(trpc.playlists.getMany.infiniteQueryFilter());
             queryClient.invalidateQueries(trpc.playlists.getManyForVideo.infiniteQueryFilter({ videoId }));
+            queryClient.invalidateQueries(trpc.playlists.getOne.queryFilter({ playlistId: data.playlistId }))
+            queryClient.invalidateQueries(trpc.playlists.getVideos.infiniteQueryFilter({ playlistId: data.playlistId }))
         },
         onError: () => {
             toast.error("재생목록에 비디오 추가 실패")

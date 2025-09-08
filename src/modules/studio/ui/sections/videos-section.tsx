@@ -167,13 +167,13 @@ export function VideosSectionSuspense() {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        view
+                                        {video.viewCount}
                                     </TableCell>
                                     <TableCell>
-                                        comment
+                                        {video.commentCount}
                                     </TableCell>
                                     <TableCell>
-                                        liked
+                                        {video.likeCount}
                                     </TableCell>
                                 </TableRow>
                             </Link>
