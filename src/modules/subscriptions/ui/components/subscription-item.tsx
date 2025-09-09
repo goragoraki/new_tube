@@ -37,10 +37,7 @@ export default function SubscriptionItem({
 
                     <SubscriptionsButton
                         size="sm"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            onUnsubscribe();
-                        }}
+                        onClick={onUnsubscribe}
                         disabled={disabled}
                         isSubscribed
                     />

@@ -46,7 +46,11 @@ export default function SubscriptionsButton({
                             <BellOffIcon />
                             <p>없음</p>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={onClick}>
+                        <DropdownMenuItem
+                            onClick={(e) => {
+                                e.preventDefault();
+                                onClick();
+                            }}>
                             <UserMinus />
                             <p>구독취소</p>
                         </DropdownMenuItem>
@@ -58,7 +62,10 @@ export default function SubscriptionsButton({
                     variant="default"
                     className={cn("rounded-full", className)}
                     disabled={disabled}
-                    onClick={onClick}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        onClick();
+                    }}
                 >
                     구독
                 </Button>

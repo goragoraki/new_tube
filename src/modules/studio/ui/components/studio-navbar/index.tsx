@@ -12,7 +12,7 @@ export default function StudioNavbar() {
                 {/** menu and logo */}
                 <div className="flex items-center flex-shrink-0">
                     <SidebarTrigger />
-                    <Link href='/studio'>
+                    <Link href='/studio' className="hidden md:block">
                         <div className="flex items-center gap-1 p-4">
                             <Image src='/logo.svg' alt="Logo" width={32} height={32} />
                             <p className="font-bold text-xl tracking-tight">Studio</p>
