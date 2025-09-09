@@ -34,8 +34,6 @@ export default function VideoTopRow({ video }: VideoTopRowProps) {
         return format(video.createdAt, "yyyy.MM.dd")
     }, [video.createdAt])
 
-    console.log(video.createdAt)
-    console.log(expandedDate)
     return (
         <div className="flex flex-col gap-4 mt-4">
             <h1 className="text-xl font-bold">{video.title}</h1>

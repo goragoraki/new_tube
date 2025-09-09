@@ -26,7 +26,7 @@ export default function SubscriptionsButton({
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="secondary"
-                            className="rounded-full outline-none focus:outline-none"
+                            className={cn("rounded-full outline-none focus:outline-none", className)}
                         >
                             <BellIcon />
                             <p>구독중</p>

@@ -29,8 +29,9 @@ export default function VideoInfo({
 
     return (
         <div className="flex gap-3">
-
-            <UserAvatar imageUrl={data.user.imageUrl} name={data.user.name} />
+            <Link href={`/users/${data.user.id}`}>
+                <UserAvatar imageUrl={data.user.imageUrl} name={data.user.name} />
+            </Link>
             <Link href={`/videos/${data.id}`} className="flex-1 min-w-0">
                 <h3 className="font-medium line-clamp-1 lg:line-clamp-2 text-base break-words">
                     {data.title}
