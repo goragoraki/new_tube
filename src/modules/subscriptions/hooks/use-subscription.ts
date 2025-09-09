@@ -22,6 +22,7 @@ export const useSubscriptions = ({
             toast.success("구독함");
             queryClient.invalidateQueries(trpc.users.getOne.queryFilter({ id: userId }))
             queryClient.invalidateQueries(trpc.videos.getManySubscribed.queryFilter());
+            queryClient.invalidateQueries(trpc.subscriptions.getMany.infiniteQueryFilter())
             if (fromVideoId) {
                 queryClient.invalidateQueries(trpc.videos.getOne.queryFilter({ id: fromVideoId }));
             }
@@ -40,6 +41,7 @@ export const useSubscriptions = ({
             toast.success("구독취소함");
             queryClient.invalidateQueries(trpc.users.getOne.queryFilter({ id: userId }))
             queryClient.invalidateQueries(trpc.videos.getManySubscribed.queryFilter());
+            queryClient.invalidateQueries(trpc.subscriptions.getMany.infiniteQueryFilter())
             if (fromVideoId) {
                 queryClient.invalidateQueries(trpc.videos.getOne.queryFilter({ id: fromVideoId }));
             }
